@@ -13,3 +13,10 @@ parseTime('12am');       // { hour: 0, minute: 0, second: 0 }
 The library exists because time strings in the wild are inconsistent: users mix 12-hour and 24-hour clocks, omit leading zeros, and vary capitalization and spacing. A parser that accepts all of these without guessing is surprisingly fiddly. The trade-off made here is strictness: the parser accepts only unambiguous numeric components separated by colons, with an optional `am`/`pm` suffix. It rejects zero hours in 12-hour strings (`0am`, `0pm`) rather than guessing what the author meant.
 
 The awkward edge a reader will hit is `12am` and `12pm`: these are interpreted as midnight and noon respectively, following the common convention. Any other hour with a meridiem is converted to 24-hour time. Strings without a meridiem are always interpreted as 24-hour time.
+
+## Performance
+
+The window keeps a bounded buffer, so `push` is constant time and memory does not
+grow with the length of the stream. `peak` and `trough` are linear in the window
+size, which is the trade that keeps `push` cheap.
+
